@@ -108,8 +108,28 @@ const toggleBookmark = async (req, res, next) => {
   }
 };
 
+// ─── @desc    Get bookmarked stories for logged-in user
+// ─── @route   GET /api/stories/bookmarks
+// ─── @access  Private
+const getBookmarkedStories = async (req, res, next) => {
+  try {
+    const stories = await Story.find({
+      _id: { $in: req.user.bookmarks }
+    }).sort({ points: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: stories.length,
+      data: stories,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getStories,
   getStoryById,
   toggleBookmark,
+  getBookmarkedStories,
 };

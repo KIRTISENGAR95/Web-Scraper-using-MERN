@@ -43,6 +43,12 @@ export const storyService = {
     const response = await api.post(`/stories/${id}/bookmark`);
     return response.data;
   },
+
+  // Fetch all bookmarked stories for logged-in user
+  getBookmarkedStories: async () => {
+    const response = await api.get('/stories/bookmarks');
+    return response.data;
+  },
 };
 
 export const authService = {
