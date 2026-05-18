@@ -15,6 +15,8 @@ const storySchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: null,
+      unique: true,                  // ← DB-level duplicate prevention
+      sparse: true,                  // ← allows multiple null values (Ask-HN posts)
       match: [
         /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w\-.~:/?#[\]@!$&'()*+,;=%]*)?$/,
         'Please provide a valid URL',
