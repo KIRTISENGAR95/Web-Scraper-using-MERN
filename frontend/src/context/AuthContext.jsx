@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { authService } from '../services/api';
 
 // Create Context
 const AuthContext = createContext();
@@ -16,8 +16,6 @@ export const AuthProvider = ({ children }) => {
 
     if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
-      // Set default auth header for all future axios requests
-      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
     }
     setLoading(false);
   }, []);
@@ -27,12 +25,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
-        password,
-      });
-
-      const { data } = response.data;
+      const response = await authService.login({ email, password });
+      const { data } = response;
       
       // Save to state
       setUser(data);
@@ -40,9 +34,6 @@ export const AuthProvider = ({ children }) => {
       // Save to localStorage
       localStorage.setItem('user', JSON.stringify(data));
       localStorage.setItem('token', data.token);
-
-      // Set auth header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       
       setLoading(false);
       return { success: true };
@@ -59,13 +50,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
-        name,
-        email,
-        password,
-      });
-
-      const { data } = response.data;
+      const response = await authService.register({ name, email, password });
+      const { data } = response;
       
       // Save to state
       setUser(data);
@@ -73,9 +59,6 @@ export const AuthProvider = ({ children }) => {
       // Save to localStorage
       localStorage.setItem('user', JSON.stringify(data));
       localStorage.setItem('token', data.token);
-
-      // Set auth header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
 
       setLoading(false);
       return { success: true };
@@ -95,9 +78,6 @@ export const AuthProvider = ({ children }) => {
     // Clear localStorage
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-
-    // Remove auth header
-    delete axios.defaults.headers.common['Authorization'];
   };
 
   // Method to update user object safely (e.g. when updating bookmarks)
