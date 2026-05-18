@@ -64,7 +64,53 @@ const getStoryById = async (req, res, next) => {
   }
 };
 
+// ─── @desc    Toggle story bookmark
+// ─── @route   POST /api/stories/:id/bookmark
+// ─── @access  Private
+const toggleBookmark = async (req, res, next) => {
+  try {
+    const storyId = req.params.id;
+    const user = req.user;
+
+    // 1. Check if story actually exists
+    const story = await Story.findById(storyId).lean();
+    if (!story) {
+      return next(createError(`Story not found with ID ${storyId}`, 404));
+    }
+
+    // 2. Check if already bookmarked
+    const isBookmarked = user.bookmarks.includes(storyId);
+
+    if (isBookmarked) {
+      // Remove bookmark
+      user.bookmarks = user.bookmarks.filter(
+        (id) => id.toString() !== storyId.toString()
+      );
+    } else {
+      // Add bookmark
+      user.bookmarks.push(storyId);
+    }
+
+    // 3. Save user with updated bookmarks
+    await user.save();
+
+    // 4. Return success response with updated bookmarks array
+    res.status(200).json({
+      success: true,
+      message: isBookmarked ? 'Bookmark removed' : 'Bookmark added',
+      data: user.bookmarks,
+    });
+  } catch (error) {
+    // Handle invalid ObjectId format
+    if (error.name === 'CastError' && error.kind === 'ObjectId') {
+      return next(createError(`Invalid Story ID format`, 400));
+    }
+    next(error);
+  }
+};
+
 module.exports = {
   getStories,
   getStoryById,
+  toggleBookmark,
 };
