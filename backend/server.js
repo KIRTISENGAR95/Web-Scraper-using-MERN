@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const healthRoutes = require('./routes/healthRoutes');
 const scraperRoutes = require('./routes/scraperRoutes');
+const authRoutes = require('./routes/authRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
 const { scrapeTopStories } = require('./utils/scraper');
@@ -37,9 +38,9 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // ─── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/health',   healthRoutes);
 app.use('/api/scrape',   scraperRoutes);
+app.use('/api/auth',     authRoutes);
 
 // TODO: Register additional routes here
-// app.use('/api/auth',    authRoutes);
 // app.use('/api/users',   userRoutes);
 
 // ─── 404 & Global Error Handlers ──────────────────────────────────────────────
