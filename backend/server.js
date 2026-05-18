@@ -9,6 +9,7 @@ const healthRoutes = require('./routes/healthRoutes');
 const scraperRoutes = require('./routes/scraperRoutes');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+const { scrapeTopStories } = require('./utils/scraper');
 
 // ─── Validate Critical Env Vars at Startup ─────────────────────────────────────
 const REQUIRED_ENV_VARS = ['MONGO_URI'];
@@ -49,7 +50,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log('');
   console.log('🚀 ─────────────────────────────────────────');
   console.log(`   Server     : http://localhost:${PORT}`);
@@ -57,6 +58,15 @@ const server = app.listen(PORT, () => {
   console.log(`   Health     : http://localhost:${PORT}/api/health`);
   console.log('────────────────────────────────────────────');
   console.log('');
+
+  // ─── Initial Scrape on Startup ────────────────────────────────────────────────
+  try {
+    console.log('⚙️  [Server] Triggering initial scrape on startup...');
+    await scrapeTopStories();
+  } catch (error) {
+    console.error('❌ [Server] Initial scrape failed:');
+    console.error(`   ➜  ${error.message}`);
+  }
 });
 
 // ─── Unhandled Rejections & Exceptions ────────────────────────────────────────
