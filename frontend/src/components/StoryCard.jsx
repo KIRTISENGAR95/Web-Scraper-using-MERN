@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Bookmark, BookmarkCheck, TrendingUp, Clock, User as UserIcon, ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import toast from 'react-hot-toast';
 import AuthContext from '../context/AuthContext';
 import { storyService } from '../services/api';
 import './StoryCard.css';
@@ -15,7 +16,7 @@ const StoryCard = ({ story }) => {
   const handleBookmarkToggle = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert("Please login to bookmark stories!");
+      toast.error("Please login to bookmark stories");
       return;
     }
 
@@ -24,10 +25,11 @@ const StoryCard = ({ story }) => {
       const response = await storyService.toggleBookmark(story._id);
       
       if (response.success) {
-        // Update the user context with the new bookmarks array
         updateUser({ bookmarks: response.data });
+        toast.success(isBookmarked ? 'Bookmark removed' : 'Bookmark added', { icon: isBookmarked ? '🗑️' : '📌' });
       }
     } catch (err) {
+      toast.error('Failed to update bookmark');
       console.error("Failed to toggle bookmark", err);
     } finally {
       setIsBookmarking(false);
