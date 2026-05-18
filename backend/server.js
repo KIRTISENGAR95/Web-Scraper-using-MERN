@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // ─── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/health',   healthRoutes);
-app.use('/api/scraper',  scraperRoutes);
+app.use('/api/scrape',   scraperRoutes);
 
 // TODO: Register additional routes here
 // app.use('/api/auth',    authRoutes);

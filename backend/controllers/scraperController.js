@@ -2,7 +2,7 @@ const { scrapeTopStories } = require('../utils/scraper');
 const Story = require('../models/Story');
 
 // ─── @desc    Trigger a fresh scrape from Hacker News
-// ─── @route   POST /api/scraper/run
+// ─── @route   POST /api/scrape
 // ─── @access  Public
 const runScraper = async (req, res, next) => {
   try {
