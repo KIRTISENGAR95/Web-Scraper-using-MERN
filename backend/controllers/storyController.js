@@ -18,8 +18,7 @@ const getStories = async (req, res, next) => {
       Story.find()
         .sort({ points: -1 })
         .skip(skip)
-        .limit(limitNum)
-        .lean(), // Use lean() for faster execution when returning pure JSON
+        .limit(limitNum),
       Story.countDocuments(),
     ]);
 
